@@ -1,0 +1,1 @@
+import{j as s}from"./index-DBKgaztn.js";function c(){return s.jsxs("div",{className:"cosmic-nebula-container",children:[s.jsx("div",{className:"cosmic-dust-cloud"}),s.jsx("div",{className:"parallax-stars-deep"}),s.jsx("div",{className:"parallax-stars-close"}),s.jsx("div",{className:"absolute inset-0 grid-bg opacity-15"})]})}export{c as C};
