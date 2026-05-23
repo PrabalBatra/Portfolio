@@ -207,8 +207,7 @@ export function Contact() {
                 {[
                   { l: "Email", h: `mailto:${links.email || "batraprabal04@gmail.com"}` },
                   { l: "LinkedIn", h: "https://www.linkedin.com/in/prabal-batra" },
-                  { l: "GitHub", h: links.github || "https://github.com/prabal-batra" },
-                  { l: "Resume PDF", h: links.resume_PDF || "/Prabal Batra Resume (1).pdf" }
+                  { l: "GitHub", h: links.github || "https://github.com/prabal-batra" }
                 ].map((b, i) => (
                   <a
                     key={b.l}

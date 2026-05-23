@@ -232,7 +232,7 @@ const FALLBACK = {
     }
   ] as SuccessStory[],
   links: {
-    resume_PDF: "/Prabal Batra Resume (1).pdf", 
+    resume_PDF: "", 
     visume_video: "", 
     github: "https://github.com/prabal-batra", 
     email: "batraprabal04@gmail.com", 
