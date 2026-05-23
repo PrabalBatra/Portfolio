@@ -1,80 +1,104 @@
 <div align="center">
 
-<br>
+# Prabal Batra
 
-<h1>
-PORTFOLIO
-</h1>
+### AI & Geospatial Intelligence Engineer
 
-<p>
-A digital experience showcasing my work in
-</p>
-
-<h3>
-Artificial Intelligence • Geospatial Intelligence • Digital Twins
-</h3>
+Building intelligent systems at the intersection of  
+**Artificial Intelligence • GIS • Digital Twins • Spatial Computing**
 
 <br>
 
 <a href="https://prabalbatra.github.io/Portfolio/">
-<img src="https://img.shields.io/badge/EXPLORE%20WEBSITE→-111827?style=for-the-badge&logo=googlechrome&logoColor=white"/>
+<img src="https://img.shields.io/badge/🌐%20View%20Portfolio-Live%20Website-111827?style=for-the-badge" />
 </a>
 
-<br>
-<br>
+<a href="https://github.com/PrabalBatra">
+<img src="https://img.shields.io/badge/GitHub-PrabalBatra-181717?style=for-the-badge&logo=github" />
+</a>
 
-<img width="100%" src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png"/>
+<a href="https://linkedin.com/in/prabal-batra">
+<img src="https://img.shields.io/badge/LinkedIn-Prabal%20Batra-0A66C2?style=for-the-badge&logo=linkedin" />
+</a>
+
+<br><br>
+
+> Designing intelligent spatial systems powered by AI.
 
 </div>
 
-## Overview
+---
 
-This portfolio is designed as an **interactive digital experience** that showcases projects, technical capabilities, and design philosophy across:
+## About Me
+
+I'm **Prabal Batra**, an engineer focused on building **AI-powered geospatial systems, Digital Twin technologies, and intelligent spatial workflows**.
+
+My work combines **Artificial Intelligence, GIS, backend engineering, and interactive mapping** to solve real-world spatial problems through intelligent automation and data-driven decision systems.
+
+Currently working on:
+
+- 🤖 **Agentic AI Systems**
+- 🌍 **Geospatial Intelligence Platforms**
+- 🏙️ **Digital Twin Technologies**
+- 🛰️ **Raster & Terrain Analysis**
+- ⚡ **Spatial APIs & Backend Systems**
+- 🧠 **LLM-powered Decision Workflows**
+
+---
+
+## What I Build
 
 <table>
 <tr>
-<td width="33%" valign="top">
 
-### AI Systems
+<td width="50%" valign="top">
 
-- Agentic AI  
-- LLM Workflows  
-- Reasoning Systems  
-- Intelligent Automation
+### 🤖 AI + Spatial Intelligence
+
+Building systems where users can interact with geospatial data using natural language.
+
+**Example Workflow**
+
+```txt
+User Query
+    ↓
+AI Reasoning
+    ↓
+Spatial Logic
+    ↓
+PostGIS Processing
+    ↓
+Interactive Map Results
+```
 
 </td>
 
-<td width="33%" valign="top">
+<td width="50%" valign="top">
 
-### Geospatial
+### 🌍 Geospatial Engineering
 
-- GIS Intelligence  
-- Spatial Analysis  
+Working with:
+
 - PostGIS  
-- GeoServer
+- GeoServer  
+- FastAPI  
+- QGIS  
+- MapLibre  
+- CesiumJS  
+- Spatial Analytics
 
 </td>
 
-<td width="33%" valign="top">
-
-### Digital Twin
-
-- Urban Intelligence  
-- 3D Systems  
-- Infrastructure Analytics  
-- Spatial Computing
-
-</td>
 </tr>
 </table>
 
-<br>
+---
+
+## Tech Stack
 
 <div align="center">
 
-### Tech Stack
-
-<img src="https://skillicons.dev/icons?i=html,css,js,python,postgres,docker,github,vscode" />
+<img src="https://skillicons.dev/icons?i=python,js,html,css,postgres,docker,github,vscode" />
 
 </div>
 
@@ -82,12 +106,10 @@ This portfolio is designed as an **interactive digital experience** that showcas
 
 <div align="center">
 
----
+## Explore My Portfolio
 
-### Enter The Experience
+### **[prabalbatra.github.io/Portfolio](https://prabalbatra.github.io/Portfolio/)**
 
-# [prabalbatra.github.io/Portfolio](https://prabalbatra.github.io/Portfolio/)
-
----
+Built to showcase my journey in **AI, GIS, Spatial Intelligence, and Digital Twin Systems**.
 
 </div>
