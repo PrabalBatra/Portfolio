@@ -31,3 +31,5 @@ dist-ssr
 *.sln
 *.sw?
 
+# Ignore local resume PDF
+public/Prabal Batra Resume (1).pdf

@@ -145,6 +145,7 @@ function RootComponent() {
       orientation: "vertical",
       gestureOrientation: "vertical",
       smoothWheel: true,
+      syncTouch: true,
       touchMultiplier: 2,
     });
 

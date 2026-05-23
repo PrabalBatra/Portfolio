@@ -76,6 +76,7 @@
     scroll-behavior: smooth;
     background-color: #05020c;
     background: var(--bg-deep);
+    overscroll-behavior: none;
   }
   body {
     background-color: #05020c;
@@ -85,6 +86,7 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
+    overscroll-behavior: none;
   }
   
   /* Galactic backdrop styles */
