@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect } from 'react';
 import { Renderer, Program, Triangle, Mesh } from 'ogl';
 import './LightRays.css';
 
@@ -83,49 +83,20 @@ const LightRays = ({
   const smoothMouseRef = useRef({ x: 0.5, y: 0.5 });
   const animationIdRef = useRef<number | null>(null);
   const meshRef = useRef<Mesh | null>(null);
-  const cleanupFunctionRef = useRef<(() => void) | null>(null);
-  const [isVisible, setIsVisible] = useState(false);
+  const isVisibleRef = useRef(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
+
 
   useEffect(() => {
     if (!containerRef.current) return;
 
-    observerRef.current = new IntersectionObserver(
-      entries => {
-        const entry = entries[0];
-        setIsVisible(entry.isIntersecting);
-      },
-      { threshold: 0.1 }
-    );
-
-    observerRef.current.observe(containerRef.current);
-
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-        observerRef.current = null;
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!isVisible || !containerRef.current) return;
-
-    if (cleanupFunctionRef.current) {
-      cleanupFunctionRef.current();
-      cleanupFunctionRef.current = null;
-    }
-
     const initializeWebGL = async () => {
       if (!containerRef.current) return;
 
-      await new Promise(resolve => setTimeout(resolve, 10));
-
-      if (!containerRef.current) return;
-
       const renderer = new Renderer({
-        dpr: Math.min(window.devicePixelRatio, 2),
-        alpha: true
+        dpr: 1,
+        alpha: true,
+        antialias: false
       });
       rendererRef.current = renderer;
 
@@ -273,8 +244,6 @@ void main() {
       const updatePlacement = () => {
         if (!containerRef.current || !renderer) return;
 
-        renderer.dpr = Math.min(window.devicePixelRatio, 2);
-
         const { clientWidth: wCSS, clientHeight: hCSS } = containerRef.current;
         renderer.setSize(wCSS, hCSS);
 
@@ -289,8 +258,10 @@ void main() {
         uniforms.rayDir.value = dir;
       };
 
+      let rafActive = false;
       const loop = (t: number) => {
-        if (!rendererRef.current || !uniformsRef.current || !meshRef.current) {
+        if (!rendererRef.current || !uniformsRef.current || !meshRef.current || !isVisibleRef.current) {
+          rafActive = false;
           return;
         }
 
@@ -309,70 +280,53 @@ void main() {
 
         try {
           renderer.render({ scene: mesh });
-          animationIdRef.current = requestAnimationFrame(loop);
+          if (isVisibleRef.current) {
+            animationIdRef.current = requestAnimationFrame(loop);
+            rafActive = true;
+          } else {
+            rafActive = false;
+          }
         } catch (error) {
           console.warn('WebGL rendering error:', error);
+          rafActive = false;
           return;
         }
       };
 
+      const io = new IntersectionObserver(
+        (entries) => {
+          isVisibleRef.current = entries[0].isIntersecting;
+          if (isVisibleRef.current && !rafActive) {
+            animationIdRef.current = requestAnimationFrame(loop);
+            rafActive = true;
+          }
+        },
+        { threshold: 0.01 }
+      );
+      io.observe(containerRef.current);
+
       window.addEventListener('resize', updatePlacement);
       updatePlacement();
-      animationIdRef.current = requestAnimationFrame(loop);
-
-      cleanupFunctionRef.current = () => {
-        if (animationIdRef.current) {
-          cancelAnimationFrame(animationIdRef.current);
-          animationIdRef.current = null;
-        }
-
-        window.removeEventListener('resize', updatePlacement);
-
-        if (renderer) {
-          try {
-            const canvas = renderer.gl.canvas;
-            const loseContextExt = renderer.gl.getExtension('WEBGL_lose_context');
-            if (loseContextExt) {
-              loseContextExt.loseContext();
-            }
-
-            if (canvas && canvas.parentNode) {
-              canvas.parentNode.removeChild(canvas);
-            }
-          } catch (error) {
-            console.warn('Error during WebGL cleanup:', error);
-          }
-        }
-
-        rendererRef.current = null;
-        uniformsRef.current = null;
-        meshRef.current = null;
-      };
     };
 
     initializeWebGL();
 
     return () => {
-      if (cleanupFunctionRef.current) {
-        cleanupFunctionRef.current();
-        cleanupFunctionRef.current = null;
+      if (animationIdRef.current) {
+        cancelAnimationFrame(animationIdRef.current);
+        animationIdRef.current = null;
       }
+      if (rendererRef.current) {
+        try {
+          const canvas = rendererRef.current.gl.canvas;
+          const loseContextExt = rendererRef.current.gl.getExtension('WEBGL_lose_context');
+          if (loseContextExt) loseContextExt.loseContext();
+          if (canvas && canvas.parentNode) canvas.parentNode.removeChild(canvas);
+        } catch (e) {}
+      }
+      rendererRef.current = null;
     };
-  }, [
-    isVisible,
-    raysOrigin,
-    raysColor,
-    raysSpeed,
-    lightSpread,
-    rayLength,
-    pulsating,
-    fadeDistance,
-    saturation,
-    followMouse,
-    mouseInfluence,
-    noiseAmount,
-    distortion
-  ]);
+  }, []);
 
   useEffect(() => {
     if (!uniformsRef.current || !containerRef.current || !rendererRef.current) return;

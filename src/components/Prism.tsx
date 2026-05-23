@@ -62,13 +62,25 @@ const Prism = ({
     const HOVSTR = Math.max(0, hoverStrength || 1);
     const INERT = Math.max(0, Math.min(1, inertia || 0.12));
 
-    const dpr = Math.min(1.25, window.devicePixelRatio || 1);
-    const renderer = new Renderer({
-      dpr,
-      alpha: transparent,
-      antialias: false
-    });
+    const dpr = 1;
+    let renderer: Renderer;
+    try {
+      renderer = new Renderer({
+        dpr,
+        alpha: transparent,
+        antialias: false
+      });
+    } catch (err) {
+      console.warn("OGL Renderer creation failed in Prism:", err);
+      return;
+    }
+
     const gl = renderer.gl;
+    if (!gl) {
+      console.warn("OGL WebGL context is null. Prism backdrop disabled.");
+      return;
+    }
+
     gl.disable(gl.DEPTH_TEST);
     gl.disable(gl.CULL_FACE);
     gl.disable(gl.BLEND);
@@ -430,14 +442,27 @@ const Prism = ({
         window.removeEventListener('blur', onBlur);
       }
       if (io) io.disconnect();
-      if (gl.canvas.parentElement === container) container.removeChild(gl.canvas);
       
-      // Memory cleanup for OGL
-      geometry.remove();
-      program.remove();
-
-      const ext = gl.getExtension('WEBGL_lose_context');
-      if (ext) ext.loseContext();
+      try {
+        if (gl) {
+          // Force-shrink canvas to 1x1 to release GPU backbuffer immediately
+          if (gl.canvas) {
+            gl.canvas.width = 1;
+            gl.canvas.height = 1;
+            if (gl.canvas.parentElement === container) {
+              container.removeChild(gl.canvas);
+            }
+          }
+          
+          geometry.remove();
+          program.remove();
+          
+          const ext = gl.getExtension('WEBGL_lose_context');
+          if (ext) ext.loseContext();
+        }
+      } catch (err) {
+        console.warn("Error during OGL cleanup in Prism:", err);
+      }
     };
   }, [
     height,

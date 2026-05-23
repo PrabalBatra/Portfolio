@@ -1,269 +1,343 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { HDRLoader } from 'three/examples/jsm/loaders/HDRLoader.js';
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+
+// 🌟 Persistent Global Cache to reuse the exact same WebGL Canvas & Context across page mounts
+let globalCanvas: HTMLCanvasElement | null = null;
+let globalRenderer: THREE.WebGLRenderer | null = null;
+let globalScene: THREE.Scene | null = null;
+let globalCamera: THREE.PerspectiveCamera | null = null;
+let globalMask: THREE.Object3D | null = null;
+let globalPointLight: THREE.PointLight | null = null;
+let globalPointLight2: THREE.PointLight | null = null;
+let globalCoreBackLight: THREE.PointLight | null = null;
+let globalGlowMesh: THREE.Mesh | null = null;
+let globalGlowUniforms: any = null;
+let globalCustomUniforms: any = null;
+let globalSpeechClock = 0;
+let globalTheta = 0;
+let globalMouse = { x: 0, y: 0 };
+let hasInitialized = false;
+
+// Global reference for speaking state to avoid React closure traps
+const globalSpeakingState = { current: false };
 
 export function CyberMask({ isSpeaking = false }: { isSpeaking?: boolean }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const isSpeakingRef = useRef(isSpeaking);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Keep ref in sync with prop for the animation loop
+  // Keep global speaking state in sync with React prop
   useEffect(() => {
-    isSpeakingRef.current = isSpeaking;
+    globalSpeakingState.current = isSpeaking;
   }, [isSpeaking]);
 
   useEffect(() => {
-    if (!canvasRef.current) return;
+    const container = containerRef.current;
+    if (!container) return;
 
-    // 1. Renderer Setup with Photorealistic Tone Mapping, Transparency, and Soft Shadows
-    const renderer = new THREE.WebGLRenderer({
-      canvas: canvasRef.current,
-      antialias: true,
-      alpha: true,
-      powerPreference: "high-performance",
-      premultipliedAlpha: false
-    });
-    renderer.setClearColor(0x000000, 0); // Transparent backdrop
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    
-    // Enable clean cinematic soft shadow maps
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    
-    // Subdued, cinematic filmic tone mapping
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.05;
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    let animationFrameId = 0;
 
-    // 2. Scene Setup
-    const scene = new THREE.Scene();
+    // 1. Initial setup helper
+    const setupThree = () => {
+      globalCanvas = document.createElement('canvas');
+      globalCanvas.style.width = '100%';
+      globalCanvas.style.height = '100%';
+      globalCanvas.style.display = 'block';
 
-    // 3. Camera Setup
-    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 10;
-    camera.position.y = 0.2;
-
-    // 4. Moody Studio Lighting (Soft Stealth Setup with Shadow Casting)
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
-    scene.add(ambientLight);
-
-    const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    dirLight.position.set(2, 5, 5);
-    dirLight.castShadow = true;
-    dirLight.shadow.bias = -0.001;
-    dirLight.shadow.mapSize.width = 1024;
-    dirLight.shadow.mapSize.height = 1024;
-    scene.add(dirLight);
-
-    // Neon Blue orbit light casting dynamic shadows
-    const pointlight = new THREE.PointLight(0x38bdf8, 3.5, 30); 
-    pointlight.position.set(0, 3, 2);
-    pointlight.castShadow = true;
-    pointlight.shadow.bias = -0.002;
-    pointlight.shadow.mapSize.width = 1024;
-    pointlight.shadow.mapSize.height = 1024;
-    scene.add(pointlight);
-
-    // Neon Purple orbit light casting dynamic shadows
-    const pointlight2 = new THREE.PointLight(0x818cf8, 3.5, 30); 
-    pointlight2.position.set(0, 3, 2);
-    pointlight2.castShadow = true;
-    pointlight2.shadow.bias = -0.002;
-    pointlight2.shadow.mapSize.width = 1024;
-    pointlight2.shadow.mapSize.height = 1024;
-    scene.add(pointlight2);
-
-    // Backing Wall Projector: Receives neon light pools and shadows, Additive blending
-    const wallGeometry = new THREE.PlaneGeometry(45, 45);
-    const wallMaterial = new THREE.MeshStandardMaterial({
-      color: 0x000000,
-      roughness: 0.85,
-      metalness: 0.1,
-      transparent: true,
-      opacity: 0.8,
-      blending: THREE.AdditiveBlending
-    });
-    const wall = new THREE.Mesh(wallGeometry, wallMaterial);
-    wall.position.set(0, 0, -2.6);
-    wall.receiveShadow = true;
-    scene.add(wall);
-
-    // 5. Stealth Dark Gunmetal Material with 🌟 Precision Lower-Lip WebGL Deformer!
-    const textureLoader = new THREE.TextureLoader();
-    const roughnessMap = textureLoader.load('https://miroleon.github.io/daily-assets/surf_imp_02.jpg');
-    roughnessMap.wrapT = THREE.RepeatWrapping;
-    roughnessMap.wrapS = THREE.RepeatWrapping;
-    roughnessMap.colorSpace = THREE.NoColorSpace;
-
-    const maskMaterial = new THREE.MeshPhysicalMaterial({
-      color: 0x2b2b2b,
-      roughness: 0.22,
-      metalness: 1.0,
-      roughnessMap: roughnessMap,
-      envMapIntensity: 1.4,
-      clearcoat: 0.9,
-      clearcoatRoughness: 0.08,
-      reflectivity: 0.8
-    });
-
-    // Custom shader uniform for lower lip articulation
-    const customUniforms = {
-      uSpeech: { value: 0.0 }
-    };
-
-    maskMaterial.onBeforeCompile = (shader) => {
-      shader.uniforms.uSpeech = customUniforms.uSpeech;
-      
-      shader.vertexShader = `
-        uniform float uSpeech;
-        ${shader.vertexShader}
-      `;
-
-      // Modify vertex coordinates inside Three.js standard begin_vertex chunk
-      shader.vertexShader = shader.vertexShader.replace(
-        '#include <begin_vertex>',
-        `
-        vec3 transformed = vec3( position );
-        
-        // 🌟 PRECISION BOUNDING BOX: Strictly below Y = -0.35 (untouched nose and upper lip), down to chin (-0.8), across mouth width (-0.35 to 0.35)
-        if (transformed.y < -0.35 && transformed.y > -0.8 && abs(transformed.x) < 0.35) {
-           // Smooth falloff starting precisely at the lip parting line
-           float lipMask = smoothstep(-0.35, -0.65, transformed.y) * smoothstep(0.35, 0.0, abs(transformed.x));
-           
-           // Pull ONLY the lower lip & chin downward and slightly outward when speaking
-           transformed.y -= uSpeech * lipMask * 0.18;
-           transformed.z += uSpeech * lipMask * 0.06;
-        }
-        `
-      );
-    };
-
-    let mask: THREE.Object3D | null = null;
-    const fbxLoader = new FBXLoader();
-    fbxLoader.setPath('https://miroleon.github.io/daily-assets/');
-    fbxLoader.load('MASK_02.fbx', (object) => {
-      mask = object.children[0];
-      if (mask) {
-        mask.position.set(0, -0.2, 0);
-        mask.scale.setScalar(2.1);
-        
-        mask.traverse((child) => {
-          if (child instanceof THREE.Mesh) {
-            child.material = maskMaterial;
-            child.castShadow = true;
-            child.receiveShadow = true;
-          }
+      try {
+        globalRenderer = new THREE.WebGLRenderer({
+          canvas: globalCanvas,
+          antialias: false,
+          alpha: true,
+          powerPreference: "high-performance",
+          premultipliedAlpha: false
         });
-        scene.add(mask);
+      } catch (err) {
+        console.error("Three.js WebGLRenderer creation failed inside CyberMask:", err);
+        return false;
       }
-    }, undefined, (err) => {
-      console.error("Error loading cyber mask FBX model:", err);
-    });
 
-    const hdrLoader = new HDRLoader();
-    hdrLoader.setPath('https://miroleon.github.io/daily-assets/');
-    hdrLoader.load('gradient_13.hdr', (texture) => {
-      texture.mapping = THREE.EquirectangularReflectionMapping;
-      scene.environment = texture;
-    });
+      globalRenderer.setClearColor(0x000000, 0); // Transparent background
+      globalRenderer.setPixelRatio(1);
+      globalRenderer.shadowMap.enabled = false;
+      globalRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+      globalRenderer.toneMappingExposure = 1.05;
+      globalRenderer.outputColorSpace = THREE.SRGBColorSpace;
 
-    // 6. Mouse Tracker Logic
-    let mouseX = 0;
-    let mouseY = 0;
+      globalScene = new THREE.Scene();
+      
+      globalCamera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+      globalCamera.position.z = 10;
+      globalCamera.position.y = 0.2;
 
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX = (e.clientX / window.innerWidth) - 0.5;
-      mouseY = (e.clientY / window.innerHeight) - 0.5;
+      // Lighting Setup
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+      globalScene.add(ambientLight);
+
+      const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      dirLight.position.set(2, 5, 5);
+      globalScene.add(dirLight);
+
+      // Neon lights
+      globalPointLight = new THREE.PointLight(0x38bdf8, 3.5, 30);
+      globalPointLight.position.set(0, 3, 2);
+      globalScene.add(globalPointLight);
+
+      globalPointLight2 = new THREE.PointLight(0x818cf8, 3.5, 30);
+      globalPointLight2.position.set(0, 3, 2);
+      globalScene.add(globalPointLight2);
+
+      // Neon rim lights for premium aesthetics
+      const rimLight1 = new THREE.DirectionalLight(0x38bdf8, 1.5);
+      rimLight1.position.set(-5, 4, -5);
+      globalScene.add(rimLight1);
+
+      const rimLight2 = new THREE.DirectionalLight(0x818cf8, 1.2);
+      rimLight2.position.set(5, -4, -5);
+      globalScene.add(rimLight2);
+
+      // Core Back Light
+      globalCoreBackLight = new THREE.PointLight(0x38bdf8, 0, 15);
+      globalCoreBackLight.position.set(0, 0, -1.2);
+      globalScene.add(globalCoreBackLight);
+
+      // Shader Glow
+      globalGlowUniforms = {
+        uColor: { value: new THREE.Color(0x38bdf8) },
+        uSpeech: { value: 0.0 },
+        uTime: { value: 0.0 }
+      };
+
+      const glowMaterial = new THREE.ShaderMaterial({
+        uniforms: globalGlowUniforms,
+        vertexShader: `
+          varying vec2 vUv;
+          void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          varying vec2 vUv;
+          uniform vec3 uColor;
+          uniform float uSpeech;
+          uniform float uTime;
+          void main() {
+            float dist = distance(vUv, vec2(0.5));
+            float alpha = smoothstep(0.5, 0.1, dist);
+            float glow = pow(clamp(1.0 - dist * 2.0, 0.0, 1.0), 1.8);
+            float wave = sin(dist * 35.0 - uTime * 6.0) * 0.03 * uSpeech;
+            alpha = clamp(alpha + wave, 0.0, 1.0);
+            vec3 finalColor = uColor * (1.2 + uSpeech * 0.8);
+            gl_FragColor = vec4(finalColor, alpha * (0.10 + uSpeech * 0.65) * glow);
+          }
+        `,
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
+      });
+
+      globalGlowMesh = new THREE.Mesh(new THREE.PlaneGeometry(5.0, 5.0), glowMaterial);
+      globalGlowMesh.position.set(0, -0.2, -1.1);
+      globalScene.add(globalGlowMesh);
+
+      // Back Wall
+      const wall = new THREE.Mesh(
+        new THREE.PlaneGeometry(45, 45),
+        new THREE.MeshStandardMaterial({
+          color: 0x000000,
+          roughness: 0.85,
+          metalness: 0.1,
+          transparent: true,
+          opacity: 0.8,
+          blending: THREE.AdditiveBlending
+        })
+      );
+      wall.position.set(0, 0, -2.6);
+      globalScene.add(wall);
+
+      // Model Material
+      const roughnessMap = new THREE.TextureLoader().load('https://miroleon.github.io/daily-assets/surf_imp_02.jpg');
+      roughnessMap.wrapT = THREE.RepeatWrapping;
+      roughnessMap.wrapS = THREE.RepeatWrapping;
+      roughnessMap.colorSpace = THREE.NoColorSpace;
+
+      const maskMaterial = new THREE.MeshPhysicalMaterial({
+        color: 0x2b2b2b,
+        roughness: 0.22,
+        metalness: 1.0,
+        roughnessMap: roughnessMap,
+        envMapIntensity: 1.4,
+        clearcoat: 0.9,
+        clearcoatRoughness: 0.08,
+        reflectivity: 0.8
+      });
+
+      globalCustomUniforms = {
+        uSpeech: { value: 0.0 }
+      };
+
+      // Load GLTF Model
+      new GLTFLoader().load('/vendetta_mask.glb', (gltf) => {
+        globalMask = gltf.scene;
+        if (globalMask) {
+          globalMask.traverse((child) => {
+            if (child instanceof THREE.Mesh) {
+              child.material = maskMaterial;
+            }
+          });
+
+          const box = new THREE.Box3().setFromObject(globalMask);
+          const size = new THREE.Vector3();
+          box.getSize(size);
+          const center = new THREE.Vector3();
+          box.getCenter(center);
+
+          const maxDim = Math.max(size.x, size.y, size.z);
+          const targetScale = 4.5 / (maxDim || 1);
+          globalMask.scale.setScalar(targetScale);
+
+          globalMask.position.x = -center.x * targetScale;
+          globalMask.position.y = -center.y * targetScale - 0.2;
+          globalMask.position.z = -center.z * targetScale;
+
+          globalScene?.add(globalMask);
+        }
+      }, undefined, (err) => {
+        console.error("Error loading GLTF model in CyberMask:", err);
+      });
+
+      hasInitialized = true;
+      return true;
     };
-    window.addEventListener('mousemove', handleMouseMove);
 
-    // 7. Animation & Camera orbits
-    let theta1 = 0;
-    let speechClock = 0;
-    let animationFrameId: number;
+    // Initialize once globally
+    if (!hasInitialized) {
+      const ok = setupThree();
+      if (!ok) return;
+    }
 
-    const update = () => {
-      const speaking = isSpeakingRef.current;
+    // Append persistent Canvas to parent page container
+    if (globalCanvas) {
+      container.appendChild(globalCanvas);
+    }
+
+    // Mouse tracker
+    const handleMouseMove = (e: MouseEvent) => {
+      globalMouse.x = (e.clientX / window.innerWidth) - 0.5;
+      globalMouse.y = (e.clientY / window.innerHeight) - 0.5;
+    };
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+
+    // Animation Loop
+    const tick = () => {
+      if (!globalRenderer || !globalScene || !globalCamera) return;
+
+      const speaking = globalSpeakingState.current;
       const currentSpeed = speaking ? 0.04 : 0.007;
-      theta1 += currentSpeed;
+      globalTheta += currentSpeed;
 
       if (speaking) {
-        speechClock += 0.45; // Syllable oscillation speed
-        customUniforms.uSpeech.value = Math.abs(Math.sin(speechClock));
+        globalSpeechClock += 0.45;
+        globalCustomUniforms.uSpeech.value = Math.abs(Math.sin(globalSpeechClock));
       } else {
-        speechClock = 0;
-        customUniforms.uSpeech.value = THREE.MathUtils.lerp(customUniforms.uSpeech.value, 0.0, 0.65); // Instantly and crisply shut mouth
+        globalSpeechClock = 0;
+        globalCustomUniforms.uSpeech.value = THREE.MathUtils.lerp(globalCustomUniforms.uSpeech.value, 0.0, 0.65);
       }
 
-      // Orbit camera
-      camera.position.x = Math.sin(theta1) * 2;
-      camera.position.y = 2.5 * Math.cos(theta1) + 1;
+      const speechAmp = globalCustomUniforms.uSpeech.value;
 
-      // Dynamic light intensity modulation while speaking
-      const blueIntensity = speaking ? 5.5 + Math.sin(theta1 * 12) * 2.5 : 3.5;
-      const purpleIntensity = speaking ? 5.5 + Math.cos(theta1 * 15) * 2.5 : 3.5;
-      pointlight.intensity = blueIntensity;
-      pointlight2.intensity = purpleIntensity;
+      // Stable camera
+      globalCamera.position.set(0, 0.2, 10);
 
-      // Orbit revolving point lights
-      pointlight.position.x = Math.sin(theta1 + 1) * 11;
-      pointlight.position.z = Math.cos(theta1 + 1) * 11;
-      pointlight.position.y = 2 * Math.cos(theta1 - 3) + 3;
+      // Light glow modulation
+      if (globalPointLight && globalPointLight2) {
+        globalPointLight.intensity = speaking ? 5.5 + Math.sin(globalTheta * 12) * 2.5 : 3.5;
+        globalPointLight2.intensity = speaking ? 5.5 + Math.cos(globalTheta * 15) * 2.5 : 3.5;
 
-      pointlight2.position.x = -Math.sin(theta1 + 1) * 11;
-      pointlight2.position.z = -Math.cos(theta1 + 1) * 11;
-      pointlight2.position.y = 2 * -Math.cos(theta1 - 3) - 6;
+        globalPointLight.position.x = Math.sin(globalTheta + 1) * 11;
+        globalPointLight.position.z = Math.cos(globalTheta + 1) * 11;
+        globalPointLight.position.y = 2 * Math.cos(globalTheta - 3) + 3;
 
-      camera.lookAt(0, 0, 0);
-
-      // Interactive mouse follow with ZERO head nodding (pure lower-lip gestures only!)
-      if (mask) {
-        mask.position.y = -0.2; // Perfectly locked head position
-        mask.rotation.z = 0;    // Perfectly locked head tilt
-
-        const targetRotY = mouseX * 0.6;
-        const targetRotX = mouseY * 0.4;
-        mask.rotation.y = THREE.MathUtils.lerp(mask.rotation.y, targetRotY, 0.05);
-        mask.rotation.x = THREE.MathUtils.lerp(mask.rotation.x, targetRotX, 0.05);
+        globalPointLight2.position.x = -Math.sin(globalTheta + 1) * 11;
+        globalPointLight2.position.z = -Math.cos(globalTheta + 1) * 11;
+        globalPointLight2.position.y = 2 * -Math.cos(globalTheta - 3) - 6;
       }
+
+      // Backlight modulation
+      if (globalCoreBackLight) {
+        if (speaking) {
+          globalCoreBackLight.intensity = 15.0 + speechAmp * 25.0;
+          globalCoreBackLight.color.setHex(speechAmp > 0.5 ? 0x818cf8 : 0x38bdf8);
+        } else {
+          globalCoreBackLight.intensity = THREE.MathUtils.lerp(globalCoreBackLight.intensity, 0, 0.1);
+        }
+      }
+
+      // Halo Shader Update
+      if (globalGlowUniforms && globalGlowMesh) {
+        globalGlowUniforms.uSpeech.value = speechAmp;
+        globalGlowUniforms.uTime.value = globalTheta;
+
+        const currentGlowColor = new THREE.Color();
+        currentGlowColor.lerpColors(new THREE.Color(0x38bdf8), new THREE.Color(0x818cf8), speechAmp);
+        globalGlowUniforms.uColor.value.copy(currentGlowColor);
+
+        const targetGlowScale = 1.0 + speechAmp * 0.40;
+        globalGlowMesh.scale.set(targetGlowScale, targetGlowScale, 1.0);
+      }
+
+      // Model rotation follow
+      if (globalMask) {
+        globalMask.position.y = -0.2;
+        globalMask.rotation.z = 0;
+        
+        const targetRotY = globalMouse.x * 0.6;
+        const targetRotX = globalMouse.y * 0.4;
+        globalMask.rotation.y = THREE.MathUtils.lerp(globalMask.rotation.y, targetRotY, 0.05);
+        globalMask.rotation.x = THREE.MathUtils.lerp(globalMask.rotation.x, targetRotX, 0.05);
+      }
+
+      globalCamera.lookAt(0, 0, 0);
+      globalRenderer.render(globalScene, globalCamera);
     };
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
-      if (window.scrollY < window.innerHeight * 1.2) {
-        update();
-        renderer.render(scene, camera);
-      }
+      tick();
     };
-
     animate();
 
-    // 8. Resize Handler
+    // Resize handler
     const handleResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      if (!globalCamera || !globalRenderer) return;
+      const w = container.clientWidth || 1;
+      const h = container.clientHeight || 1;
+      globalCamera.aspect = w / h;
+      globalCamera.updateProjectionMatrix();
+      globalRenderer.setSize(w, h, false);
     };
-    window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', handleResize, { passive: true });
+    handleResize(); // Execute once to align size
 
-    // 9. Teardown
     return () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
-      renderer.dispose();
-      const gl = renderer.getContext();
-      const ext = gl?.getExtension('WEBGL_lose_context');
-      if (ext) ext.loseContext();
+      
+      // Cleanly un-mount from parent page DOM container without losing the WebGL context
+      if (globalCanvas && globalCanvas.parentElement === container) {
+        container.removeChild(globalCanvas);
+      }
     };
   }, []);
 
   return (
-    <canvas 
-      ref={canvasRef} 
-      className="absolute inset-0 w-full h-full pointer-events-none"
-      style={{ background: 'transparent' }}
+    <div
+      ref={containerRef}
+      style={{ width: '100%', height: '100%', position: 'relative' }}
+      aria-label="3D CyberMask React interactive visualizer"
     />
   );
 }
+
+export default CyberMask;

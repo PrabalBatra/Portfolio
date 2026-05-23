@@ -1,86 +1,56 @@
-import { motion } from "framer-motion";
 import { Reveal, SectionLabel } from "../Reveal";
-
-const items = [
-  { t: "Artificial Intelligence", d: "LLMs, agentic AI, reasoning systems, prompt orchestration." },
-  { t: "Geospatial Intelligence", d: "Spatial analysis, Digital Twins, GIS, infrastructure." },
-  { t: "Multi-Agent Systems", d: "Task planning, decomposition, reasoning pipelines." },
-  { t: "Computer Vision", d: "Satellite imagery, object detection, image analysis." },
-  { t: "Backend Intelligence", d: "FastAPI, scalable APIs, AI orchestration." },
-  { t: "3D & Digital Twins", d: "Spatial systems, simulations, immersive data." },
-];
+import { usePortfolioData } from "@/hooks/usePortfolioData";
+import { DomeGallery, ImageItem } from "../DomeGallery";
+import { SectionDissolve } from "../SectionDissolve";
+import { CosmicBackdrop } from "../CosmicBackdrop";
 
 export function Expertise() {
+  const { projects, achievements, successStories } = usePortfolioData();
+
+  const galleryImages: ImageItem[] = [
+    ...projects.filter(p => p.imgUrl).map(p => ({ src: p.imgUrl, alt: p.title, title: p.title, description: p.description, link: p.link })),
+    ...achievements.filter(a => a.imgUrl).map(a => ({ src: a.imgUrl, alt: a.title, title: a.title, description: a.description, link: a.link })),
+    ...successStories.filter(s => s.imgUrl).map(s => ({ src: s.imgUrl, alt: s.title, title: s.title, description: s.description, link: s.link })),
+    { src: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1000&auto=format&fit=crop', alt: 'AI Neural Matrix', title: 'Cosmic Neural Reasoning', description: 'Autonomous multi-agent orchestration across decentralized computational nodes.' },
+    { src: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop', alt: 'Quantum Geospatial', title: 'Geospatial Reconnaissance', description: 'Real-time satellite imagery synthesis and 3D terrain reconstruction pipelines.' }
+  ];
+
   return (
-    <section id="expertise" className="relative py-32 px-6 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent" />
-      <div className="relative max-w-7xl mx-auto">
-        <SectionLabel num="02" label="Expertise" />
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Orbital */}
-          <div className="relative aspect-square max-w-[520px] mx-auto w-full">
-            {/* core */}
-            <motion.div
-              animate={{ scale: [1, 1.05, 1] }}
-              transition={{ duration: 4, repeat: Infinity }}
-              className="absolute inset-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full"
-              style={{ background: "var(--gradient-glow)", boxShadow: "var(--shadow-glow)" }}
-            />
-            <div className="absolute inset-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full glass-strong flex items-center justify-center">
-              <div className="text-[10px] tracking-[0.25em] text-center text-white uppercase font-display">
-                Core<br/>Intelligence
+    <section id="expertise" className="relative py-32 overflow-hidden bg-[#04060b]">
+      {/* Dynamic Cosmic Space Backdrop (GPU composite-accelerated, lag-free) */}
+      <CosmicBackdrop />
+
+      <SectionDissolve className="w-full relative z-10">
+        <div className="max-w-7xl mx-auto px-6">
+          <SectionLabel num="03" label="Visual Dome" />
+          <Reveal variant="dissolve">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+              <h2 className="text-3xl md:text-5xl font-light tracking-tight max-w-3xl text-white py-2">
+                Visual <span className="italic text-gradient">Intelligence</span> Dome.
+              </h2>
+              <div className="text-xs font-mono text-cyan-400 uppercase tracking-widest max-w-xs">
+                INTERACTIVE 3D SPATIAL DOME · CLICK TILE TO ENLARGE ASSET &amp; GO TO PROJECT
               </div>
             </div>
-            {/* orbits */}
-            {[1, 2, 3].map((r) => (
-              <div
-                key={r}
-                className="absolute inset-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/[0.06]"
-                style={{ width: `${r * 32}%`, height: `${r * 32}%` }}
-              />
-            ))}
-            {/* orbiting nodes */}
-            {items.map((it, i) => {
-              const angle = (i / items.length) * Math.PI * 2;
-              const r = 42;
-              const x = (50 + Math.cos(angle) * r).toFixed(4);
-              const y = (50 + Math.sin(angle) * r).toFixed(4);
-              return (
-                <motion.div
-                  key={it.t}
-                  className="absolute -translate-x-1/2 -translate-y-1/2 group cursor-pointer"
-                  style={{ left: `${x}%`, top: `${y}%` }}
-                  animate={{ y: [0, -8, 0] }}
-                  transition={{ duration: 4 + i, repeat: Infinity, delay: i * 0.3 }}
-                >
-                  <div className="w-3 h-3 rounded-full bg-primary shadow-[0_0_20px_var(--glow)] group-hover:scale-150 transition-transform" />
-                  <div className="absolute left-1/2 -translate-x-1/2 mt-2 whitespace-nowrap text-[10px] tracking-wider text-muted-foreground uppercase opacity-70 group-hover:opacity-100 group-hover:text-white transition">
-                    {it.t.split(" ")[0]}
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-
-          <div>
-            <Reveal variant="dissolve">
-              <h2 className="text-4xl md:text-6xl font-light leading-[1.05] tracking-tight">
-                Building intelligence across <span className="italic text-gradient">data, space &amp; systems</span>.
-              </h2>
-            </Reveal>
-            <div className="mt-10 grid sm:grid-cols-2 gap-3">
-              {items.map((it, i) => (
-                <Reveal key={it.t} delay={i * 0.06} variant="dissolve">
-                  <div className="glass rounded-xl p-4 hover:border-primary/50 hover:bg-white/[0.05] transition-all duration-500 group">
-                    <div className="text-sm font-medium text-white group-hover:text-primary transition-colors">{it.t}</div>
-                    <div className="mt-1.5 text-xs text-muted-foreground leading-relaxed">{it.d}</div>
-                  </div>
-                </Reveal>
-              ))}
-            </div>
-          </div>
+          </Reveal>
         </div>
-      </div>
+
+        {/* Compact 3D Interactive Dome Floating Directly on Page */}
+        <div className="w-full relative h-[540px] my-6 z-10">
+          <DomeGallery 
+            images={galleryImages}
+            fit={0.46}
+            minRadius={380}
+            maxRadius={850}
+            padFactor={0.25}
+            segments={35}
+            enlargeTransitionMs={450}
+            openedImageWidth="420px"
+            openedImageHeight="420px"
+            grayscale={false}
+          />
+        </div>
+      </SectionDissolve>
     </section>
   );
 }

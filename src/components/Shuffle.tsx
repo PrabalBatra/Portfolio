@@ -123,6 +123,13 @@ const Shuffle = ({
         return;
       }
 
+      // Bypass complex character split animations on mobile viewports for perfect text layout and performance
+      if (window.innerWidth < 768) {
+        setReady(true);
+        onShuffleComplete?.();
+        return;
+      }
+
       const el = ref.current;
 
       const start = scrollTriggerStart;

@@ -1,17 +1,18 @@
 import { motion, type Variants } from "framer-motion";
 import type { ReactNode } from "react";
+import { useMediaQuery } from "react-responsive";
 import Shuffle from "./Shuffle";
 
 const slideVariants: Variants = {
-  hidden: { opacity: 0, y: 40 },
+  hidden: { opacity: 0, y: 30 },
   show: { opacity: 1, y: 0, transition: { duration: 0.9, ease: [0.22, 1, 0.36, 1] } },
 };
 
 const dissolveVariants: Variants = {
   hidden: {
     opacity: 0,
-    filter: "blur(16px) brightness(2)",
-    scale: 0.94,
+    filter: "blur(12px) brightness(1.5)",
+    scale: 0.96,
     clipPath: "inset(0% 0% 100% 0%)",
   },
   show: {
@@ -20,7 +21,7 @@ const dissolveVariants: Variants = {
     scale: 1,
     clipPath: "inset(0% 0% 0% 0%)",
     transition: {
-      duration: 1.4,
+      duration: 1.2,
       ease: [0.16, 1, 0.3, 1],
     }
   }
@@ -40,13 +41,15 @@ export function Reveal({
   variant?: RevealVariant;
 }) {
   const chosenVariants = variant === "dissolve" ? dissolveVariants : slideVariants;
+  const isMobile = useMediaQuery({ maxWidth: 767 });
 
   return (
     <motion.div
       variants={chosenVariants}
       initial="hidden"
-      whileInView="show"
-      viewport={{ once: true, margin: "-100px" }}
+      animate={isMobile ? "show" : undefined}
+      whileInView={isMobile ? undefined : "show"}
+      viewport={isMobile ? undefined : { once: true, margin: "-50px" }}
       transition={{ delay }}
       className={className}
     >
