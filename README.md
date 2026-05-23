@@ -1,59 +1,68 @@
 <div align="center">
 
-# ✦ PRABAL BATRA
+<br>
 
-### Portfolio Experience
+<h1>
+PORTFOLIO
+</h1>
 
 <p>
-An immersive portfolio exploring the intersection of  
-<b>Artificial Intelligence</b>, <b>Geospatial Intelligence</b>, and <b>Digital Twin Systems</b>.
+A digital experience showcasing my work in
 </p>
+
+<h3>
+Artificial Intelligence • Geospatial Intelligence • Digital Twins
+</h3>
 
 <br>
 
 <a href="https://prabalbatra.github.io/Portfolio/">
-  <img src="https://img.shields.io/badge/ENTER%20PORTFOLIO-000000?style=for-the-badge&logo=vercel&logoColor=white" />
+<img src="https://img.shields.io/badge/EXPLORE%20WEBSITE→-111827?style=for-the-badge&logo=googlechrome&logoColor=white"/>
 </a>
+
+<br>
+<br>
+
+<img width="100%" src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png"/>
 
 </div>
 
----
+## Overview
 
-<br>
-
-> **Designed as a digital experience rather than just a portfolio.**
-
-This website reflects my work, projects, and technical journey through a modern, immersive interface focused on:
+This portfolio is designed as an **interactive digital experience** that showcases projects, technical capabilities, and design philosophy across:
 
 <table>
 <tr>
-<td width="33%" align="center">
+<td width="33%" valign="top">
 
-### 🤖 AI
+### AI Systems
 
-Agentic Systems  
-LLMs  
-Reasoning Workflows
-
-</td>
-
-<td width="33%" align="center">
-
-### 🌍 GIS
-
-Spatial Intelligence  
-PostGIS  
-GeoServer
+- Agentic AI  
+- LLM Workflows  
+- Reasoning Systems  
+- Intelligent Automation
 
 </td>
 
-<td width="33%" align="center">
+<td width="33%" valign="top">
 
-### 🏙️ Digital Twins
+### Geospatial
 
-Urban Intelligence  
-3D Spatial Systems  
-Infrastructure Analytics
+- GIS Intelligence  
+- Spatial Analysis  
+- PostGIS  
+- GeoServer
+
+</td>
+
+<td width="33%" valign="top">
+
+### Digital Twin
+
+- Urban Intelligence  
+- 3D Systems  
+- Infrastructure Analytics  
+- Spatial Computing
 
 </td>
 </tr>
@@ -63,7 +72,7 @@ Infrastructure Analytics
 
 <div align="center">
 
-## Tech Behind The Experience
+### Tech Stack
 
 <img src="https://skillicons.dev/icons?i=html,css,js,python,postgres,docker,github,vscode" />
 
@@ -73,18 +82,12 @@ Infrastructure Analytics
 
 <div align="center">
 
-## Preview The Experience
-
-### **[→ Open Portfolio Website](https://prabalbatra.github.io/Portfolio/)**
-
-</div>
-
-<br>
-
 ---
 
-<div align="center">
+### Enter The Experience
 
-### *Built to feel immersive, cinematic, and interactive.*
+# [prabalbatra.github.io/Portfolio](https://prabalbatra.github.io/Portfolio/)
+
+---
 
 </div>
