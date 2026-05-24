@@ -4,7 +4,7 @@ import { Contact } from "@/components/sections/Contact";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Communicator System // Prabal Batra" },
+      { title: "Portfolio-Prabal Batra" },
       { name: "description", content: "Establish direct contact with Prabal Batra for AI development, geospatial projects, spatial modeling platforms, or multi-agent research." },
     ],
   }),
