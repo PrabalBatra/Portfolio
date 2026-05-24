@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WorkRouteImport } from './routes/work'
 import { Route as StackRouteImport } from './routes/stack'
 import { Route as HonorsRouteImport } from './routes/honors'
-import { Route as ExpertiseRouteImport } from './routes/expertise'
 import { Route as ExperienceRouteImport } from './routes/experience'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AboutRouteImport } from './routes/about'
@@ -31,11 +30,6 @@ const StackRoute = StackRouteImport.update({
 const HonorsRoute = HonorsRouteImport.update({
   id: '/honors',
   path: '/honors',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ExpertiseRoute = ExpertiseRouteImport.update({
-  id: '/expertise',
-  path: '/expertise',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExperienceRoute = ExperienceRouteImport.update({
@@ -64,7 +58,6 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/experience': typeof ExperienceRoute
-  '/expertise': typeof ExpertiseRoute
   '/honors': typeof HonorsRoute
   '/stack': typeof StackRoute
   '/work': typeof WorkRoute
@@ -74,7 +67,6 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/experience': typeof ExperienceRoute
-  '/expertise': typeof ExpertiseRoute
   '/honors': typeof HonorsRoute
   '/stack': typeof StackRoute
   '/work': typeof WorkRoute
@@ -85,7 +77,6 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/experience': typeof ExperienceRoute
-  '/expertise': typeof ExpertiseRoute
   '/honors': typeof HonorsRoute
   '/stack': typeof StackRoute
   '/work': typeof WorkRoute
@@ -97,7 +88,6 @@ export interface FileRouteTypes {
     | '/about'
     | '/contact'
     | '/experience'
-    | '/expertise'
     | '/honors'
     | '/stack'
     | '/work'
@@ -107,7 +97,6 @@ export interface FileRouteTypes {
     | '/about'
     | '/contact'
     | '/experience'
-    | '/expertise'
     | '/honors'
     | '/stack'
     | '/work'
@@ -117,7 +106,6 @@ export interface FileRouteTypes {
     | '/about'
     | '/contact'
     | '/experience'
-    | '/expertise'
     | '/honors'
     | '/stack'
     | '/work'
@@ -128,7 +116,6 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   ContactRoute: typeof ContactRoute
   ExperienceRoute: typeof ExperienceRoute
-  ExpertiseRoute: typeof ExpertiseRoute
   HonorsRoute: typeof HonorsRoute
   StackRoute: typeof StackRoute
   WorkRoute: typeof WorkRoute
@@ -155,13 +142,6 @@ declare module '@tanstack/react-router' {
       path: '/honors'
       fullPath: '/honors'
       preLoaderRoute: typeof HonorsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/expertise': {
-      id: '/expertise'
-      path: '/expertise'
-      fullPath: '/expertise'
-      preLoaderRoute: typeof ExpertiseRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/experience': {
@@ -200,7 +180,6 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   ContactRoute: ContactRoute,
   ExperienceRoute: ExperienceRoute,
-  ExpertiseRoute: ExpertiseRoute,
   HonorsRoute: HonorsRoute,
   StackRoute: StackRoute,
   WorkRoute: WorkRoute,

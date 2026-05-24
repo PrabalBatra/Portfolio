@@ -8,7 +8,6 @@ import profileImg from "../../public/profile.png";
 const links = [
   { to: "/about", label: "About", sector: "NEURAL IDENTITY // SECTOR 01" },
   { to: "/stack", label: "Stack", sector: "TECH ECOSYSTEM // SECTOR 02" },
-  { to: "/expertise", label: "Expertise", sector: "VISUAL INTELLIGENCE // SECTOR 03" },
   { to: "/work", label: "Work", sector: "PRODUCTION REPOSITORIES // SECTOR 04" },
   { to: "/experience", label: "Experience", sector: "PROFESSIONAL TRAJECTORY // SECTOR 05" },
   { to: "/honors", label: "Honors", sector: "ACADEMIC DECORATIONS // SECTOR 06" },

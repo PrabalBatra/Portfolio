@@ -115,7 +115,6 @@ const routeOrder = [
   { path: "/", sector: "CORE INITIATION // SECTOR 00" },
   { path: "/about", sector: "NEURAL IDENTITY // SECTOR 01" },
   { path: "/stack", sector: "TECH ECOSYSTEM // SECTOR 02" },
-  { path: "/expertise", sector: "VISUAL INTELLIGENCE // SECTOR 03" },
   { path: "/work", sector: "PRODUCTION REPOSITORIES // SECTOR 04" },
   { path: "/experience", sector: "PROFESSIONAL TRAJECTORY // SECTOR 05" },
   { path: "/honors", sector: "ACADEMIC DECORATIONS // SECTOR 06" },
