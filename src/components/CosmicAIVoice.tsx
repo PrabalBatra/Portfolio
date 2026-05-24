@@ -316,14 +316,16 @@ export function CosmicAIVoice({ onSpeakingChange, onListeningChange, onTextChang
 
       for (let i = event.resultIndex; i < event.results.length; ++i) {
         if (event.results[i].isFinal) {
-          finalTranscript += event.results[i][0].transcript;
+          finalTranscript += event.results[i][0].transcript + ' ';
         } else {
-          interimTranscript += event.results[i][0].transcript;
+          // OVERWRITE instead of append to fix Android Chrome bug where multiple 
+          // historical interim results are kept in the array
+          interimTranscript = event.results[i][0].transcript;
         }
       }
 
       if (finalTranscript) {
-        accumulatedSpeechRef.current += " " + finalTranscript;
+        accumulatedSpeechRef.current += " " + finalTranscript.trim();
       }
       
       const displayText = accumulatedSpeechRef.current + " " + interimTranscript;
