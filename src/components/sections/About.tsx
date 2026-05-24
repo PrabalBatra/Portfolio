@@ -5,11 +5,11 @@ import { SectionDissolve } from "../SectionDissolve";
 import { ScrollIndicator } from "../ScrollIndicator";
 
 const stats = [
-  { v: "100+", l: "Spatial Queries / day" },
-  { v: "92%", l: "Context Optimization" },
-  { v: "60%", l: "Faster AI Responses" },
-  { v: "40%", l: "Better Complex Query Handling" },
-  { v: "02", l: "Patent Applications" },
+  { v: "1st", l: "Place @ CU Sharks (Solo)" },
+  { v: "02", l: "Patents Filed" },
+  { v: "100%", l: "Fueled by Caffeine" },
+  { v: "0", l: "Hours of Sleep" },
+  { v: "∞", l: "Bugs Fixed" },
 ];
 
 export function About() {
