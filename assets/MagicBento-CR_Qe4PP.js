@@ -1,4 +1,4 @@
-import{r as l,j as t}from"./index-Cg6fQ8vU.js";import{g as S}from"./SectionDissolve-CQH0Br5z.js";const Y=6,F=350,X=768,T=["56, 189, 248","168, 85, 247","16, 185, 129","245, 158, 11","244, 63, 94","99, 102, 241"],B=(r,g,i)=>{const m=document.createElement("div");return m.className="particle",m.style.cssText=`
+import{r as l,j as t}from"./index-BXl-1cDK.js";import{g as S}from"./SectionDissolve-BzV5Eop7.js";const Y=6,F=350,X=768,T=["56, 189, 248","168, 85, 247","16, 185, 129","245, 158, 11","244, 63, 94","99, 102, 241"],B=(r,g,i)=>{const m=document.createElement("div");return m.className="particle",m.style.cssText=`
     position: absolute;
     width: 4px;
     height: 4px;
