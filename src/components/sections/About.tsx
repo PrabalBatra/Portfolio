@@ -2,6 +2,7 @@ import { Reveal, SectionLabel } from "../Reveal";
 import { usePortfolioData } from "@/hooks/usePortfolioData";
 import { PixelBlast } from "../PixelBlast";
 import { SectionDissolve } from "../SectionDissolve";
+import { ScrollIndicator } from "../ScrollIndicator";
 
 const stats = [
   { v: "100+", l: "Spatial Queries / day" },
@@ -26,7 +27,7 @@ export function About() {
   return (
     <section id="about" className="relative py-32 px-6 overflow-hidden">
       {/* Seamless Feathered Ambient PixelBlast Layer */}
-      <div 
+      <div
         className="absolute inset-0 z-0 opacity-30 pointer-events-auto"
         style={{
           maskImage: "linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)",
@@ -110,6 +111,8 @@ export function About() {
           ))}
         </div>
       </SectionDissolve>
+
+      <ScrollIndicator />
     </section>
   );
 }

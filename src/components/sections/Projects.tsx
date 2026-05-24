@@ -3,6 +3,7 @@ import { usePortfolioData } from "@/hooks/usePortfolioData";
 import { MagicBento } from "../MagicBento";
 import { SectionDissolve } from "../SectionDissolve";
 import { CosmicBackdrop } from "../CosmicBackdrop";
+import { ScrollIndicator } from "../ScrollIndicator";
 
 export function Projects() {
   const { projects } = usePortfolioData();
@@ -34,6 +35,7 @@ export function Projects() {
           />
         </Reveal>
       </SectionDissolve>
+      <ScrollIndicator />
     </section>
   );
 }

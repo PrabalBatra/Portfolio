@@ -4,6 +4,7 @@ import { SectionDissolve } from "../SectionDissolve";
 import { ParticleCard, CARD_COLORS } from "../MagicBento";
 import React, { useState } from "react";
 import { CosmicBackdrop } from "../CosmicBackdrop";
+import { ScrollIndicator } from "../ScrollIndicator";
 
 export function Stack() {
   const { skills, metadata } = usePortfolioData();
@@ -422,6 +423,7 @@ export function Stack() {
           })}
         </div>
       </SectionDissolve>
+      <ScrollIndicator />
     </section>
   );
 }

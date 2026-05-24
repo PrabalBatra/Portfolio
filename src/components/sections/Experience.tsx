@@ -2,6 +2,7 @@ import { Reveal, SectionLabel } from "../Reveal";
 import { usePortfolioData } from "@/hooks/usePortfolioData";
 import { SectionDissolve } from "../SectionDissolve";
 import { CosmicBackdrop } from "../CosmicBackdrop";
+import { ScrollIndicator } from "../ScrollIndicator";
 
 export function Experience() {
   const { experience, successStories, metadata } = usePortfolioData();
@@ -82,6 +83,7 @@ export function Experience() {
           </div>
         </div>
       </SectionDissolve>
+      <ScrollIndicator />
     </section>
   );
 }

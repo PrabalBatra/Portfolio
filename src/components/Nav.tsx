@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Menu, X } from "lucide-react";
 import { useRouter } from "@tanstack/react-router";
-import profileImg from "../../public/profile.png";
+const profileImg = "/profile.png";
 
 const links = [
   { to: "/about", label: "About", sector: "NEURAL IDENTITY // SECTOR 01" },
