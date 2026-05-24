@@ -110,6 +110,6 @@ Working with:
 
 ### **[prabalbatra.github.io/Portfolio](https://prabalbatra.github.io/Portfolio/)**
 
-Built to showcase my journey in **AI, GIS, Spatial Intelligence, and Digital Twin Systems**.
+Built to showcase my journey in **AI, GIS, Spatial Intelligence, and Digital Twin Systems**..
 
 </div>
