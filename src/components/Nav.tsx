@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Menu, X } from "lucide-react";
 import { useRouter } from "@tanstack/react-router";
-const profileImg = "/profile.png";
+const profileImg = import.meta.env.BASE_URL + "profile.png";
 
 const links = [
   { to: "/about", label: "About", sector: "NEURAL IDENTITY // SECTOR 01" },
@@ -63,10 +63,12 @@ export function Nav() {
             <a 
               href="/" 
               onClick={(e) => handleNavClick(e, "/", "CORE INITIATION // SECTOR 00")}
-              className="font-display font-medium text-white flex items-center gap-1.5 hover:text-cyan-400 transition-colors"
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
             >
               <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-              <span>PB<span className="text-primary">.</span></span>
+              <div className="w-7 h-7 rounded-full overflow-hidden border border-white/20 shadow-[0_0_10px_rgba(56,189,248,0.15)]">
+                <img src={profileImg} alt="Profile" className="w-full h-full object-cover" />
+              </div>
             </a>
             
             <button
