@@ -149,7 +149,6 @@ export function CosmicAIVoice({ onSpeakingChange, onListeningChange, onTextChang
 
   const speakResponse = (text: string) => {
     startStreamingSpeech();
-    onTextChange?.(text);
     accumulatedFullTextRef.current = text;
     
     const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
@@ -161,7 +160,7 @@ export function CosmicAIVoice({ onSpeakingChange, onListeningChange, onTextChang
 
   const processQuery = async (query: string) => {
     stopSpeech();
-    onTextChange?.(`Analyzing query: "${query}"...`);
+    onTextChange?.(`You: "${query}"`);
     
     // Indigo breathing states to simulate cognitive processing link
     setIsSpeaking(true);
@@ -211,9 +210,8 @@ export function CosmicAIVoice({ onSpeakingChange, onListeningChange, onTextChang
               const parsed = JSON.parse(dataVal);
               const token = parsed.choices?.[0]?.delta?.content || "";
               if (token) {
-                // Update live captions/subtitles on overlay
+                // We no longer update the onTextChange with the AI response token
                 accumulatedFullTextRef.current += token;
-                onTextChange?.(accumulatedFullTextRef.current);
 
                 // Add to temporary sentence boundary detector
                 sentenceBuffer += token;
