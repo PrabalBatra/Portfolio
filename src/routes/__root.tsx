@@ -14,6 +14,15 @@ import { Nav } from "../components/Nav";
 
 import appCss from "../styles.css?url";
 
+// Suppress specific Three.js GLTFLoader warnings
+if (typeof window !== "undefined") {
+  const originalConsoleWarn = console.warn;
+  console.warn = (...args) => {
+    if (typeof args[0] === 'string' && args[0].includes('KHR_materials_pbrSpecularGlossiness')) return;
+    originalConsoleWarn(...args);
+  };
+}
+
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -137,6 +146,51 @@ function RootComponent() {
   };
 
   useEffect(() => {
+    // Console Marketing Message (Animated Terminal Boot Sequence)
+    const asciiArt = `
+  _____  _____            ____          _      
+ |  __ \\|  __ \\    /\\   |  _ \\   /\\   | |     
+ | |__) | |__) |  /  \\  | |_) | /  \\  | |     
+ |  ___/|  _  /  / /\\ \\ |  _ < / /\\ \\ | |     
+ | |    | | \\ \\ / ____ \\| |_) / ____ \\| |____ 
+ |_|    |_|  \\_\\/_/    \\_\\____/_/    \\_\\______|
+                                               
+  ____       _______ _____            
+ |  _ \\    /\\|__   __|  __ \\   /\\     
+ | |_) |  /  \\  | |  | |__) | /  \\    
+ |  _ <  / /\\ \\ | |  |  _  / / /\\ \\   
+ | |_) |/ ____ \\| |  | | \\ \\/ ____ \\  
+ |____//_/    \\_\\_|  |_|  \\_\\/_/    \\_\\ 
+`;
+    const bootSequence = [
+      { text: "🚀 BOOTING UP PRABAL'S PORTFOLIO OS...", style: "color: #38bdf8; font-size: 14px; font-weight: bold; text-shadow: 0 0 5px #38bdf8;" },
+      { text: "> ACCESS GRANTED.", style: "color: #34d399; font-size: 12px; font-family: monospace; font-weight: bold;" },
+      { text: asciiArt, style: "color: #38bdf8; font-weight: bold; text-shadow: 0 0 10px rgba(56,189,248,0.8); line-height: 1.2;" },
+      { text: "Greetings, Explorer! 🌌", style: "color: #f43f5e; font-size: 14px; font-weight: bold; text-shadow: 0 0 8px rgba(244,63,94,0.8);" },
+      { 
+        text: "Ah, another developer inspecting the console. Yes, it's React. Yes, it's WebGL. %cLet's grab a coffee sometime! ☕", 
+        style: [
+          "color: #a78bfa; font-size: 13px; font-family: monospace; line-height: 1.6;",
+          "color: #a0522d; font-size: 13px; font-family: monospace; line-height: 1.6; font-weight: bold;"
+        ]
+      },
+      { text: "I am Prabal Batra — AI Engineer, Spatial Intel Specialist, and Multi-Agent Architect.", style: "color: #a78bfa; font-size: 13px; font-family: monospace; line-height: 1.6;" },
+      { text: "🏆 FUN FACT: Competed solo against 500 teams in CU Sharks and won 1st Prize.", style: "color: #38bdf8; font-size: 13px; font-family: monospace; line-height: 1.6;" },
+      { text: "☕ FUN FACT: Once studied till 8 AM for a 10 AM exam (and survived).", style: "color: #38bdf8; font-size: 13px; font-family: monospace; line-height: 1.6;" },
+      { text: "Let's build the future together.", style: "color: #a78bfa; font-size: 13px; font-family: monospace; line-height: 1.6;" },
+      { text: "🌐 GitHub: https://github.com/PrabalBatra\n✉️ Connect & Collaborate: Drop a message via the Contact Sector!", style: "color: #34d399; font-size: 13px; font-family: monospace; line-height: 1.6; font-weight: bold;" }
+    ];
+
+    bootSequence.forEach((step, index) => {
+      setTimeout(() => {
+        if (Array.isArray(step.style)) {
+          console.log(`%c${step.text}`, ...step.style);
+        } else {
+          console.log(`%c${step.text}`, step.style);
+        }
+      }, index * 600); // 600ms delay between each line for that retro terminal feel
+    });
+
     // Keep Lenis initialized for silky-smooth kinetic scrolling globally
     const lenis = new Lenis({
       duration: 1.2,
