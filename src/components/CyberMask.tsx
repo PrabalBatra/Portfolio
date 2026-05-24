@@ -177,7 +177,7 @@ export function CyberMask({ isSpeaking = false }: { isSpeaking?: boolean }) {
       };
 
       // Load GLTF Model
-      new GLTFLoader().load('/vendetta_mask.glb', (gltf) => {
+      new GLTFLoader().load(import.meta.env.BASE_URL + 'vendetta_mask.glb', (gltf) => {
         globalMask = gltf.scene;
         if (globalMask) {
           globalMask.traverse((child) => {

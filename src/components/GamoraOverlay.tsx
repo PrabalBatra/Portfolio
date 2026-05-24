@@ -233,7 +233,7 @@ function TextModeInterface() {
             className="flex flex-col items-center justify-center mt-auto mb-auto"
           >
             <div className="w-64 h-64 md:w-80 md:h-80 opacity-90 drop-shadow-[0_0_40px_rgba(167,139,250,0.3)]">
-              <DotLottieReact src="/ai_animation_Flow_1.lottie" loop autoplay />
+              <DotLottieReact src={import.meta.env.BASE_URL + "ai_animation_Flow_1.lottie"} loop autoplay />
             </div>
             <h2 className="text-3xl md:text-4xl font-display font-semibold text-white/90 tracking-wide mt-4">
               How can I help you today?
@@ -490,7 +490,7 @@ export function GamoraOverlay({ isOpen, onClose }: GamoraOverlayProps) {
     });
 
     const gltfLoader = new GLTFLoader();
-    gltfLoader.load('/vendetta_mask.glb', (gltf) => {
+    gltfLoader.load(import.meta.env.BASE_URL + 'vendetta_mask.glb', (gltf) => {
       const mesh = gltf.scene;
       if (mesh) {
         mesh.traverse((child) => {
