@@ -173,12 +173,12 @@ export function Hero() {
           />
         </motion.div>
 
-        {/* ── TALK TO GAMORA button ── */}
+        {/* ── TALK TO GAMORA & RESUME buttons ── */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 1.6 }}
-          className="mt-10"
+          className="mt-10 flex flex-wrap items-center justify-center gap-4"
         >
           <button
             id="talk-to-gamora-btn"
@@ -235,6 +235,49 @@ export function Hero() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7" />
             </svg>
           </button>
+
+          <a
+            href="https://docs.google.com/document/d/1hXTF58nWrSnG9SfpExeSlQdptAkTbeqU5u-nStUZuII/edit?usp=sharing"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              position: 'relative',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.6rem',
+              padding: '0.65rem 1.75rem',
+              borderRadius: '9999px',
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.08) 100%)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              color: '#fff',
+              fontFamily: 'JetBrains Mono, monospace',
+              fontSize: '0.72rem',
+              letterSpacing: '0.2em',
+              textTransform: 'uppercase',
+              textDecoration: 'none',
+              cursor: 'pointer',
+              backdropFilter: 'blur(12px)',
+              transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
+            }}
+            onMouseEnter={e => {
+              const btn = e.currentTarget;
+              btn.style.background = 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.15) 100%)';
+              btn.style.borderColor = 'rgba(255,255,255,0.3)';
+              btn.style.transform = 'scale(1.04)';
+            }}
+            onMouseLeave={e => {
+              const btn = e.currentTarget;
+              btn.style.background = 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.08) 100%)';
+              btn.style.borderColor = 'rgba(255,255,255,0.1)';
+              btn.style.transform = 'scale(1)';
+            }}
+          >
+            See Resume
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </a>
         </motion.div>
       </SectionDissolve>
 
