@@ -270,6 +270,27 @@ export function CosmicAIVoice({ onSpeakingChange, onListeningChange, onTextChang
     }
   };
 
+  // Keep a reference to the active recognition instance so we can stop it manually
+  const recognitionRef = useRef<any>(null);
+  const speechTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const accumulatedSpeechRef = useRef<string>("");
+  const manualStopRef = useRef<boolean>(false);
+
+  const stopListening = () => {
+    manualStopRef.current = true;
+    if (speechTimeoutRef.current) clearTimeout(speechTimeoutRef.current);
+    if (recognitionRef.current) {
+      try { recognitionRef.current.stop(); } catch(e) {}
+    }
+    setIsListening(false);
+    
+    // Process the query if there's any text
+    if (accumulatedSpeechRef.current.trim()) {
+      processQuery(accumulatedSpeechRef.current.trim());
+      accumulatedSpeechRef.current = "";
+    }
+  };
+
   const startListening = () => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     
@@ -279,30 +300,76 @@ export function CosmicAIVoice({ onSpeakingChange, onListeningChange, onTextChang
     }
 
     stopSpeech();
+    manualStopRef.current = false;
     setIsListening(true);
+    accumulatedSpeechRef.current = "";
     onTextChange?.("System online. Listening... Speak now!");
 
     const recognition = new SpeechRecognition();
-    recognition.continuous = false;
-    recognition.interimResults = false;
+    recognitionRef.current = recognition;
+    
+    recognition.continuous = true;
+    recognition.interimResults = true;
     recognition.lang = 'en-US';
 
     recognition.onresult = (event: any) => {
-      const speechToText = event.results[0][0].transcript;
-      onTextChange?.(`You: "${speechToText}"`);
-      processQuery(speechToText);
+      let finalTranscript = '';
+      let interimTranscript = '';
+
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          finalTranscript += event.results[i][0].transcript;
+        } else {
+          interimTranscript += event.results[i][0].transcript;
+        }
+      }
+
+      if (finalTranscript) {
+        accumulatedSpeechRef.current += " " + finalTranscript;
+      }
+      
+      const displayText = accumulatedSpeechRef.current + " " + interimTranscript;
+      onTextChange?.(`You: "${displayText.trim()}"`);
+
+      // Reset the silence timeout
+      if (speechTimeoutRef.current) clearTimeout(speechTimeoutRef.current);
+      speechTimeoutRef.current = setTimeout(() => {
+        stopListening();
+      }, 3000); // 3 seconds of silence to auto-submit
     };
 
     recognition.onerror = (event: any) => {
-      console.error(event.error);
-      setIsListening(false);
+      console.warn("Speech recognition error:", event.error);
+      if (event.error === 'not-allowed') {
+        manualStopRef.current = true; // don't retry if permission denied
+        setIsListening(false);
+      }
     };
 
     recognition.onend = () => {
+      if (!manualStopRef.current) {
+        // Browser forcefully stopped it (e.g. timeout on silence), so we restart it
+        try {
+          recognition.start();
+          return;
+        } catch (err) {
+          console.warn("Failed to restart recognition automatically", err);
+        }
+      }
+      
       setIsListening(false);
+      // Auto submit if browser forcefully closes it and we have text
+      if (accumulatedSpeechRef.current.trim()) {
+        processQuery(accumulatedSpeechRef.current.trim());
+        accumulatedSpeechRef.current = "";
+      }
     };
 
-    recognition.start();
+    try {
+      recognition.start();
+    } catch (err) {
+      console.warn("Recognition already started", err);
+    }
   };
 
   useEffect(() => {
@@ -318,7 +385,7 @@ export function CosmicAIVoice({ onSpeakingChange, onListeningChange, onTextChang
     /* 🎙️ Siri-Style Pulsing Mic Button positioned perfectly at the bottom above the active waveform visualizer */
     <div className="absolute bottom-[10.0rem] left-1/2 -translate-x-1/2 z-50 pointer-events-auto flex items-center justify-center">
       <motion.button
-        onClick={isListening ? () => {} : (isSpeaking ? stopSpeech : startListening)}
+        onClick={isListening ? stopListening : (isSpeaking ? stopSpeech : startListening)}
         whileHover={{ scale: 1.06 }}
         whileTap={{ scale: 0.94 }}
         className={`relative flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 ${
