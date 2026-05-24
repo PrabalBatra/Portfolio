@@ -309,10 +309,7 @@ function RootComponent() {
           >
             {/* Pulsing screen-edge glowing laser borders */}
             <div 
-              className="absolute inset-0 border-[5px] border-cyan-400 shadow-[inset_0_0_60px_rgba(34,211,238,0.5),0_0_30px_rgba(34,211,238,0.3)]"
-              style={{
-                animation: "border-pulse 1.2s ease-in-out infinite alternate"
-              }}
+              className="absolute inset-0 border-[5px] border-cyan-400 shadow-[inset_0_0_60px_rgba(34,211,238,0.5),0_0_30px_rgba(34,211,238,0.3)] animate-pulse"
             />
           </motion.div>
         )}
